@@ -36,6 +36,36 @@ for person in persons:
 for p in principals:
     B.add_edge(p["nconst"], p["tconst"])
 
+# === GRAFO PROYECTADO DE COACTUACIÓN ===
+P = nx.Graph()
+
+# Crear diccionario: tconst -> lista de nconst de actores/actrices
+coact_dict = defaultdict(list)
+for p in principals:
+    if p["category"] in ["actor", "actress"]:
+        coact_dict[p["tconst"]].append(p["nconst"])
+
+# Crear aristas entre actores que trabajaron juntos
+for actores in coact_dict.values():
+    for a1, a2 in combinations(actores, 2):
+        if a1 != a2:
+            if P.has_edge(a1, a2):
+                P[a1][a2]["weight"] += 1
+            else:
+                P.add_edge(a1, a2, weight=1)
+
+# Asignar nombre y género como atributos
+id_to_name = {person["nconst"]: person["primaryName"] for person in persons}
+id_to_gender = {person["nconst"]: person.get("gender", "U") for person in persons}
+
+for node in P.nodes:
+    P.nodes[node]["name"] = id_to_name.get(node, node)
+    P.nodes[node]["gender"] = id_to_gender.get(node, "U")
+
+
+
+
+
 # === MODELOS Y ENDPOINTS ===
 class Edge(BaseModel):
     source: str
@@ -50,10 +80,10 @@ def graph_to_json(graph: nx.Graph):
     edges = [{"source": u, "target": v, **graph[u][v]} for u, v in graph.edges]
     return {"nodes": nodes, "edges": edges}
 
-@app.get("/api/graph/bipartite")
+@app.get("/bipartite")
 def get_bipartite():
     return graph_to_json(B)
 
-#@app.get("/api/graph/coactuacion")
-#def get_coactuacion():
-#    return graph_to_json(G)
+@app.get("/projected")
+def get_projected():
+    return graph_to_json(P)
