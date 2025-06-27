@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 # App logic
 from utils import load_data
-from graphs import create_bipartite_graph, create_projected_graph, graph_to_json
+from graphs import create_bipartite_graph, create_projected_graph, graph_to_json, get_projected_clusters, get_bipartite_clusters
 
 # Instantiate app
 app = FastAPI()
@@ -32,14 +32,10 @@ class Edge(BaseModel):
     source: str
     target: str
 
-@app.get("/ping")
-def ping():
-    return {"message": "pong"}
-
 @app.get("/bipartite")
-def get_bipartite():
-    return graph_to_json(B)
+def bipartite_clusters():
+    return {"clusters": get_bipartite_clusters(B)}
 
 @app.get("/projected")
-def get_projected():
-    return graph_to_json(P)
+def projected_clusters():
+    return {"clusters": get_projected_clusters(P)}

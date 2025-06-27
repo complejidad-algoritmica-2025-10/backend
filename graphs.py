@@ -66,3 +66,11 @@ def create_projected_graph(persons, principals):
 
     enrich_person_nodes(P, persons)
     return P
+
+def get_projected_clusters(graph: nx.Graph):
+    components = nx.connected_components(graph)
+    return [graph_to_json(graph.subgraph(c).copy()) for c in components]
+
+def get_bipartite_clusters(graph: nx.Graph):
+    components = nx.connected_components(graph)
+    return [graph_to_json(graph.subgraph(c).copy()) for c in components]
