@@ -25,6 +25,15 @@ def enrich_movie_nodes(G: nx.Graph, movies: list):
         if G.nodes[node].get("type") == "movie":
             G.nodes[node]["name"] = id_to_title.get(node, node)
 
+def enrich_category_edges(G: nx.Graph, principals: list):
+    for principal in principals:
+        person = principal["nconst"]
+        movie = principal["tconst"]
+        category = principal.get("category")
+
+        if G.has_edge(person, movie):
+            G[person][movie]["category"] = category
+
 # === BIPARTITE GRAPH ===
 
 # Represents the relationship between persons that worked in a movie in any role
@@ -43,6 +52,7 @@ def create_bipartite_graph(movies, persons, principals):
 
     enrich_person_nodes(B, persons)
     enrich_movie_nodes(B, movies)
+    enrich_category_edges(B, principals)
     return B
 
 # === PROJECTED GRAPH ===

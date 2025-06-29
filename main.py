@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 # App logic
 from utils import load_data
-from graphs import create_bipartite_graph, create_projected_graph, graph_to_json, get_projected_clusters, get_bipartite_clusters
+from graphs import create_bipartite_graph, create_projected_graph, get_projected_clusters, get_bipartite_clusters
 
 # Instantiate app
 app = FastAPI()
